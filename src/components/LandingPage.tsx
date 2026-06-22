@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import type { AudienceConfig } from "../config/npo.config";
+import type { AudienceConfig, IconName } from "../config/npo.config";
 import { contact } from "../config/brand";
 import { Icon, Check, Cross, ArrowLeft } from "./Icon";
 import AudienceHeader from "./AudienceHeader";
 import PlansModal from "./PlansModal";
+import logo from "../assets/cf-logo.png";
+import aboutImg from "../assets/corp-about.jpg";
+
 import { useRegisterStore } from "../store/registerStore";
 
 import heroImg from "../assets/hero.jpg";
@@ -27,7 +30,7 @@ function useReveal(step: string) {
 }
 
 export default function LandingPage({ config: c }: { config: AudienceConfig }) {
-  const [step, setStep] = useState<"landing" | "form">("landing");
+  const [step, setStep] = useState<"landing" | "form" | "about">("landing");
   const [isPlansOpen, setIsPlansOpen] = useState(false);
 
   const showPlans = () => {
@@ -39,23 +42,50 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
   };
   useReveal(step);
 
-  const showForm = () => {
-    setStep("form");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
   const showLanding = () => {
     setStep("landing");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (step === "form") {
+  const showForm = () => {
+    setStep("form");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const showAbout = () => {
+    setStep("about");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (step === "about") {
     return (
       <div className="min-h-screen font-body text-cf-ink antialiased">
         <AudienceHeader
           audienceLabel="CSR & NPOs"
+          activePage="about"
+          onLogoClick={showLanding}
+          onAboutClick={showAbout}
+          onPlansClick={showPlans}
+          onPartnerClick={showForm}
+        />
+
+        <AboutPage onPartnerClick={showForm} />
+
+        <PlansModal isOpen={isPlansOpen} onClose={closePlans} />
+
+        <SiteFooter config={c} onRegisterClick={showForm} />
+      </div>
+    );
+  }
+
+  if (step === "form")
+    return (
+      <div className="font-body text-cf-ink antialiased min-h-screen">
+        <AudienceHeader
+          audienceLabel="CSR & NPOs"
           activePage="audience"
           onLogoClick={showLanding}
-          onAboutClick={showLanding}
+          onAboutClick={showAbout}
           onPlansClick={showPlans}
           onPartnerClick={showForm}
         />
@@ -70,7 +100,6 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
             Back to overview
           </button>
         </div>
-
         <RegisterSection config={c} onBack={showLanding} />
 
         <PlansModal isOpen={isPlansOpen} onClose={closePlans} />
@@ -78,7 +107,6 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
         <SiteFooter config={c} onRegisterClick={showForm} />
       </div>
     );
-  }
 
   return (
     <div className="font-body text-cf-ink antialiased">
@@ -86,7 +114,7 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
         audienceLabel="CSR & NPOs"
         activePage="audience"
         onLogoClick={showLanding}
-        onAboutClick={showLanding}
+        onAboutClick={showAbout}
         onPlansClick={showPlans}
         onPartnerClick={showForm}
       />
@@ -157,30 +185,31 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
       </section>
 
       {/* PILLARS — dark navy strip */}
-      <section
-        className="bg-cf-navyInk border-y border-white/6"
-        style={{ padding: 0 }}
-      >
+      <section className="bg-white py-10">
         <div className="mx-auto max-w-[1180px] px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4">
-            {c.pillars.map((p, i) => (
-              <div
-                key={i}
-                className="flex gap-3.5 items-start p-7 border-r border-white/8 last:border-r-0"
-              >
-                <div className="flex-none w-10 h-10 border border-cf-orange/50 rounded-full grid place-items-center text-cf-orange">
-                  <Icon name={p.icon} className="w-5 h-5" />
+          <div className="overflow-hidden rounded-[26px] bg-cf-navyInk shadow-[0_26px_60px_-32px_rgba(27,34,44,.65)]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+              {c.pillars.map((p, i) => (
+                <div
+                  key={i}
+                  className="flex min-h-[180px] items-center gap-4 border-b border-white/10 p-8 sm:border-b-0 md:border-r md:last:border-r-0"
+                >
+                  <div className="flex-none grid h-11 w-11 place-items-center rounded-full border border-cf-orange/50 text-cf-orange">
+                    <Icon name={p.icon} className="h-5 w-5" />
+                  </div>
+
+                  <div className="min-w-0">
+                    <h4 className="font-display text-[.98rem] font-bold leading-tight text-white">
+                      {p.title}
+                    </h4>
+
+                    <p className="mt-1.5 text-[.84rem] leading-[1.45] text-[#9AA5B5]">
+                      {p.body}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-display font-bold text-white text-[.98rem] mb-1">
-                    {p.title}
-                  </h4>
-                  <p className="text-[#9AA5B5] text-[.82rem] leading-[1.45]">
-                    {p.body}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -823,8 +852,8 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
         </section>
       )}
 
-      <SiteFooter config={c} onRegisterClick={showForm} />
       <PlansModal isOpen={isPlansOpen} onClose={closePlans} />
+      <SiteFooter config={c} onRegisterClick={showForm} />
     </div>
   );
 }
@@ -984,30 +1013,73 @@ function RegisterSection({
   onBack?: () => void;
 }) {
   const { values, submitted, setField, submit } = useRegisterStore();
-  const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbzKJW8bgTLs7y1XWjgeRordRywQpYpwtP-EIE0oZwFxM7hsTEGtiz8jmp6SvhieLAq-/exec";
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const nextErrors: Record<string, string> = {};
+
+    c.register.fields.forEach((field) => {
+      const value = values[field.name]?.trim();
+
+      if (field.required && !value) {
+        nextErrors[field.name] = `${field.label} is required`;
+      }
+
+      if (field.type === "email" && value) {
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+        if (!isValidEmail) {
+          nextErrors[field.name] = "Please enter a valid email address";
+        }
+      }
+    });
+
+    setErrors(nextErrors);
+
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const isValid = validateForm();
+
+    if (!isValid) {
+      return;
+    }
+
     try {
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = GOOGLE_SCRIPT_URL;
-      form.target = "_blank";
+      setIsSubmitting(true);
+      setSubmitError("");
 
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "data";
-      input.value = JSON.stringify(values);
+      const scriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
 
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
+      if (!scriptUrl) {
+        throw new Error("Google Script URL is missing.");
+      }
+
+      const response = await fetch(scriptUrl, {
+        method: "POST",
+        body: JSON.stringify({
+          ...values,
+          formType: "npo",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Submission failed.");
+      }
 
       submit();
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
+      setSubmitError("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
@@ -1061,61 +1133,98 @@ function RegisterSection({
               </div>
             ) : (
               <>
-                {c.register.fields.map((f, idx) => {
-                  const inputClass =
-                    "w-full px-4 py-3.5 border-[1.5px] border-cf-line rounded-[12px] font-body text-[.95rem] text-cf-ink bg-white focus:outline-none focus:border-cf-orange focus:shadow-[0_0_0_4px_rgba(242,104,42,.12)] transition-all";
-                  const inner =
-                    f.type === "select" ? (
-                      <select
-                        name={f.name}
-                        required={f.required}
-                        className={inputClass}
-                        value={values[f.name] ?? ""}
-                        onChange={(e) => setField(f.name, e.target.value)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-[14px] gap-y-[18px]">
+                  {c.register.fields.map((f, idx) => {
+                    const hasError = Boolean(errors[f.name]);
+
+                    const inputClass = `w-full px-4 py-3.5 border-[1.5px] border-cf-line rounded-[12px] font-body text-[.95rem] text-cf-ink bg-white focus:outline-none focus:border-cf-orange focus:shadow-[0_0_0_4px_rgba(242,104,42,.12)] transition-all ${
+                      hasError
+                        ? "border-red-400 focus:border-red-500 focus:shadow-[0_0_0_4px_rgba(239,68,68,.12)]"
+                        : "border-cf-line focus:border-cf-orange focus:shadow-[0_0_0_4px_rgba(242,104,42,.12)]"
+                    }`;
+                    const inner =
+                      f.type === "select" ? (
+                        <select
+                          name={f.name}
+                          className={inputClass}
+                          value={values[f.name] ?? ""}
+                          onChange={(e) => {
+                            setField(f.name, e.target.value);
+                            setErrors((current) => ({
+                              ...current,
+                              [f.name]: "",
+                            }));
+                          }}
+                        >
+                          <option value="">Select…</option>
+                          {(f.options ?? []).map((o) => (
+                            <option key={o}>{o}</option>
+                          ))}
+                        </select>
+                      ) : f.type === "textarea" ? (
+                        <textarea
+                          name={f.name}
+                          rows={3}
+                          placeholder={f.placeholder}
+                          className={inputClass}
+                          value={values[f.name] ?? ""}
+                          onChange={(e) => {
+                            setField(f.name, e.target.value);
+                            setErrors((current) => ({
+                              ...current,
+                              [f.name]: "",
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <input
+                          type={f.type ?? "text"}
+                          name={f.name}
+                          placeholder={f.placeholder}
+                          className={inputClass}
+                          value={values[f.name] ?? ""}
+                          onChange={(e) => {
+                            setField(f.name, e.target.value);
+                            setErrors((current) => ({
+                              ...current,
+                              [f.name]: "",
+                            }));
+                          }}
+                        />
+                      );
+                    return (
+                      <div
+                        key={idx}
+                        className={f.half ? "sm:col-span-1" : "sm:col-span-2"}
                       >
-                        <option value="">Select…</option>
-                        {(f.options ?? []).map((o) => (
-                          <option key={o}>{o}</option>
-                        ))}
-                      </select>
-                    ) : f.type === "textarea" ? (
-                      <textarea
-                        name={f.name}
-                        rows={3}
-                        placeholder={f.placeholder}
-                        className={inputClass}
-                        value={values[f.name] ?? ""}
-                        onChange={(e) => setField(f.name, e.target.value)}
-                      />
-                    ) : (
-                      <input
-                        type={f.type ?? "text"}
-                        name={f.name}
-                        required={f.required}
-                        placeholder={f.placeholder}
-                        className={inputClass}
-                        value={values[f.name] ?? ""}
-                        onChange={(e) => setField(f.name, e.target.value)}
-                      />
+                        <label className="block font-semibold text-[.86rem] text-cf-navy mb-1.5">
+                          {f.label}
+                          {f.required && " *"}
+                        </label>
+
+                        {inner}
+
+                        {errors[f.name] && (
+                          <p className="mt-1.5 text-sm text-red-600 font-medium">
+                            {errors[f.name]}
+                          </p>
+                        )}
+                      </div>
                     );
-                  return (
-                    <div
-                      key={idx}
-                      className={`mb-[18px] ${f.half ? "inline-block w-[calc(50%-7px)] align-top mr-[14px] odd:last:w-full" : ""}`}
-                    >
-                      <label className="block font-semibold text-[.86rem] text-cf-navy mb-1.5">
-                        {f.label}
-                        {f.required && " *"}
-                      </label>
-                      {inner}
-                    </div>
-                  );
-                })}
+                  })}
+                </div>
+                {submitError && (
+                  <div className="mb-4 bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm font-semibold">
+                    {submitError}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full mt-1 bg-cf-orange text-white font-display font-bold text-[.95rem] py-4 rounded-full hover:bg-cf-orangeDk transition-colors"
+                  disabled={isSubmitting}
+                  className="w-full mt-1 bg-cf-orange text-white font-display font-bold text-[.95rem] py-4 rounded-full hover:bg-cf-orangeDk transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Register Interest →
+                  {isSubmitting ? "Submitting..." : "Register Interest →"}
                 </button>
                 <p className="text-center text-cf-muted text-[.78rem] mt-3">
                   We will only use your details to discuss a potential
@@ -1127,6 +1236,407 @@ function RegisterSection({
         </div>
       </div>
     </section>
+  );
+}
+
+// ABOUT PAGE
+
+function AboutPage({ onPartnerClick }: { onPartnerClick: () => void }) {
+  const missionVision: {
+    icon: IconName;
+    title: string;
+    body: string;
+  }[] = [
+    {
+      icon: "heart",
+      title: "Our mission",
+      body: "To make quality learning affordable and accessible by bundling connectivity, content, safety and rewards into one platform — distributed through the institutions learners already trust.",
+    },
+    {
+      icon: "growth",
+      title: "Our vision",
+      body: "To become Africa's leading education-first network — the default way families, schools and partners connect learners to opportunity.",
+    },
+  ];
+
+  const why = [
+    {
+      number: "01",
+      title: "The cost barrier",
+      body: "Open-market data prices millions of learners out of online learning. Affordable, education-friendly bundles remove that barrier.",
+    },
+    {
+      number: "02",
+      title: "The adoption gap",
+      body: "Stand-alone learning apps are easily uninstalled. Anchoring them to the SIM turns downloads into daily, engaged use.",
+    },
+    {
+      number: "03",
+      title: "The trust gap",
+      body: "Parents need visibility and safety. Built-in parental controls and content filtering protect younger learners online.",
+    },
+    {
+      number: "04",
+      title: "The moment",
+      body: "High smartphone penetration, a pro-MVNO regulatory framework and viable AI tutoring make an education-first network possible today.",
+    },
+  ];
+
+  const team = [
+    {
+      initials: "NM",
+      founder: true,
+      name: "Ndaba Moyo",
+      role: "Co-founder & CEO",
+      bio: "Chartered accountant with 20+ years in investment banking and corporate leadership. Drives strategy, partnerships and capital raising.",
+      linkedin: "https://www.linkedin.com/in/ndaba-n-moyo-01a72b1b/",
+    },
+    {
+      initials: "GM",
+      name: "Godfrey Marange",
+      role: "Co-founder & CTO",
+      bio: "Microsoft-certified technologist leading platform architecture, scalable systems and MVNO integration via the MVN-X platform on Microsoft Azure.",
+      linkedin: "https://www.linkedin.com/in/godfrey-marange-4ba60737/",
+    },
+    {
+      initials: "GW",
+      name: "Garth Walker",
+      role: "Chief Sales Officer",
+      bio: "25+ years in sales leadership across B2B and B2C, building institutional channel partnerships and structuring CSR / B-BBEE deals.",
+      linkedin: "https://www.linkedin.com/in/garth-walker-62164426/",
+    },
+    {
+      initials: "RM",
+      name: "Renee Martin",
+      role: "Director",
+      bio: "Finance and accounting professional with deep experience in the education sector, including The British International School.",
+      linkedin: "https://www.linkedin.com/in/renee-martin-marange/",
+    },
+  ];
+
+  const compliance = [
+    {
+      title: "ICASA",
+      status: "Active",
+      body: "MVNO operations on Cell C's licences, via the MVN-X platform. Product configuration is ICASA-compliant.",
+    },
+    {
+      title: "POPIA",
+      status: "Active",
+      body: "Information Officer registered with the Information Regulator. Parental-consent flows protect minor data.",
+    },
+    {
+      title: "FICA",
+      status: "Active",
+      body: "FICA-ready KYC for SIM activation through verified-ID services. No deposit-taking.",
+    },
+    {
+      title: "Companies Act",
+      status: "Active",
+      body: "Enthucate Tech (Pty) Ltd in good standing; CIPC filings and statutory registers maintained.",
+    },
+    {
+      title: "Consumer (CPA)",
+      status: "Active",
+      body: "CPA-aligned terms, truth-in-advertising and cooling-off periods.",
+    },
+    {
+      title: "B-BBEE",
+      status: "In progress",
+      body: "Majority Black-owned (92.5%); formal scorecard targeted at first-year close.",
+    },
+  ];
+
+  const partners = [
+    "Cell C",
+    "MVN-X",
+    "Microsoft Azure",
+    "Matific",
+    "Readability",
+    "FundaGuide AI",
+    "Pargo",
+    "Axiz",
+    "Extreme Lifestyle",
+  ];
+
+  return (
+    <>
+      <section className="relative overflow-hidden text-white">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(100deg,rgba(27,34,44,.97),rgba(34,42,54,.8)),url(${aboutImg}) center/cover`,
+          }}
+        />
+
+        <div className="relative mx-auto max-w-[1180px] px-6 py-[84px] md:pb-[88px] max-w-[60ch]">
+          <div className="font-display font-bold uppercase tracking-[.16em] text-[.74rem] text-[#FFB892]">
+            About Connect+Funda Mobile
+          </div>
+
+          <h1 className="font-display font-extrabold leading-[1.12] tracking-tight text-[clamp(2.1rem,4.8vw,3.2rem)] mt-3.5">
+            Connectivity and education{" "}
+            <span className="text-cf-orange">belong together.</span>
+          </h1>
+
+          <p className="mt-4.5 text-[#D7DEE8] text-[1.1rem]">
+            We&apos;re South Africa&apos;s first education-first mobile network
+            — an MVNO built so that every rand spent on data does double duty as
+            an investment in learning.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-[78px]">
+        <div className="mx-auto max-w-[1180px] px-6 grid gap-6 md:grid-cols-2">
+          {missionVision.map((item) => (
+            <div
+              key={item.title}
+              className="bg-cf-bgSoft border border-cf-line rounded-[18px] p-[30px]"
+            >
+              <div className="w-[46px] h-[46px] rounded-[12px] bg-cf-orange/10 flex items-center justify-center mb-4 text-cf-orange">
+                <Icon name={item.icon} className="w-6 h-6" />
+              </div>
+
+              <h2 className="font-display font-extrabold text-cf-navy text-[1.2rem]">
+                {item.title}
+              </h2>
+
+              <p className="mt-2.5 text-cf-muted">{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="py-[78px] bg-cf-bgSoft">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <div className="max-w-[640px] mb-[42px]">
+            <div className="font-display font-bold text-cf-orange uppercase tracking-[.16em] text-[.74rem]">
+              Our story
+            </div>
+
+            <h2 className="font-display font-extrabold text-cf-navy text-[clamp(1.7rem,3.4vw,2.4rem)] mt-3">
+              Why we built an education-first network
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 items-start">
+            <div>
+              <p className="text-cf-muted">
+                Connect+Funda Mobile began with a problem we kept seeing in
+                South African education: connectivity and learning were treated
+                as two separate purchases, and millions of learners could not
+                afford both. Open-market data made online learning a luxury, and
+                the EdTech apps meant to help were one tap away from being
+                deleted.
+              </p>
+
+              <p className="text-cf-muted mt-3.5">
+                Traditional networks were not built for the classroom. Students
+                struggled with the cost of data, parents had no visibility into
+                their children&apos;s digital learning, and schools had no
+                affordable way to put tools in learners&apos; hands.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-cf-muted">
+                So we anchored learning to the SIM. As a mobile virtual network
+                operator on the Cell C network, we bundle affordable,
+                education-friendly data with zero-rated learning content, an AI
+                tutor, safety controls and a rewards programme — all in one app.
+              </p>
+
+              <p className="text-cf-muted mt-3.5">
+                Rather than chase expensive advertising, we reach learners
+                through the schools, colleges, CSR partners and student bodies
+                they already belong to. Every rand spent on connectivity
+                contributes directly to a learning outcome.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-[78px]">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <div className="max-w-[640px] mb-[42px]">
+            <div className="font-display font-bold text-cf-orange uppercase tracking-[.16em] text-[.74rem]">
+              Why now
+            </div>
+
+            <h2 className="font-display font-extrabold text-cf-navy text-[clamp(1.7rem,3.4vw,2.4rem)] mt-3">
+              The gap we&apos;re closing
+            </h2>
+          </div>
+
+          <div className="grid gap-[18px] sm:grid-cols-2 lg:grid-cols-4">
+            {why.map((item) => (
+              <div
+                key={item.number}
+                className="bg-white border border-cf-line rounded-[16px] p-6"
+              >
+                <div className="font-display font-extrabold text-cf-orange text-[1.4rem] mb-1.5">
+                  {item.number}
+                </div>
+
+                <h3 className="font-display font-extrabold text-cf-navy text-[1rem]">
+                  {item.title}
+                </h3>
+
+                <p className="mt-2 text-cf-muted text-[.88rem]">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-[78px] bg-cf-bgSoft">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <div className="max-w-[640px] mb-[42px]">
+            <div className="font-display font-bold text-cf-orange uppercase tracking-[.16em] text-[.74rem]">
+              Leadership
+            </div>
+
+            <h2 className="font-display font-extrabold text-cf-navy text-[clamp(1.7rem,3.4vw,2.4rem)] mt-3">
+              The team behind the network
+            </h2>
+
+            <p className="mt-3.5 text-cf-muted text-[1.05rem]">
+              Experience across corporate finance, scalable platform engineering
+              and institutional sales — the three disciplines an MVNO and EdTech
+              business needs.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-[22px]">
+            {team.map((person) => (
+              <div
+                key={person.initials}
+                className="flex gap-[18px] bg-white border border-cf-line rounded-[18px] p-6 shadow-[0_18px_44px_-38px_rgba(27,34,44,.5)]"
+              >
+                <div
+                  className={`w-[74px] h-[74px] flex-[0_0_74px] rounded-[16px] flex items-center justify-center font-display font-extrabold text-white text-[1.4rem] ${
+                    person.founder ? "bg-cf-orange" : "bg-cf-navy"
+                  }`}
+                >
+                  {person.initials}
+                </div>
+
+                <div>
+                  <h3 className="font-display font-extrabold text-cf-navy text-[1.08rem]">
+                    {person.name}
+                  </h3>
+
+                  <div className="font-display font-bold text-cf-orange text-[.82rem] my-[3px]">
+                    {person.role}
+                  </div>
+
+                  <p className="text-cf-muted text-[.88rem]">{person.bio}</p>
+
+                  <a
+                    href={person.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-2.5 font-display font-bold text-[.8rem] text-cf-navy hover:text-cf-orange"
+                  >
+                    LinkedIn →
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-[78px] bg-cf-navyDeep text-white">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <div className="max-w-[640px] mb-[42px]">
+            <div className="font-display font-bold uppercase tracking-[.16em] text-[.74rem] text-[#FFB892]">
+              Governance & compliance
+            </div>
+
+            <h2 className="font-display font-extrabold text-white text-[clamp(1.7rem,3.4vw,2.4rem)] mt-3">
+              Built to operate responsibly
+            </h2>
+
+            <p className="mt-3.5 text-[#C2CBD8] text-[1.05rem]">
+              Serving under-18 learners on a regulated network means compliance
+              is not optional. We are compliant or compliant-by-design across
+              every regime that applies to us.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {compliance.map((item) => (
+              <div
+                key={item.title}
+                className="bg-cf-navyInk border border-white/8 rounded-[16px] p-[22px]"
+              >
+                <span className="font-display font-extrabold text-white text-[.95rem]">
+                  {item.title}
+                </span>
+
+                <span
+                  className={`float-right font-display font-bold text-[.62rem] tracking-[.1em] uppercase px-2.5 py-1 rounded-full text-[#0f1620] ${
+                    item.status === "Active" ? "bg-[#7FD49B]" : "bg-[#FFC98A]"
+                  }`}
+                >
+                  {item.status}
+                </span>
+
+                <p className="clear-both mt-3 text-[#AEB8C7] text-[.84rem]">
+                  {item.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-[60px] border-y border-cf-line">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <div className="text-center text-cf-muted font-display font-semibold text-[.82rem] tracking-[.05em]">
+            Our signed partners &amp; platform
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3 justify-center">
+            {partners.map((partner) => (
+              <span
+                key={partner}
+                className="font-display font-bold text-[.86rem] text-cf-navy bg-cf-bgSoft border border-cf-line px-[1.05rem] py-2.5 rounded-full"
+              >
+                {partner}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="text-white text-center py-[66px]"
+        style={{ background: "linear-gradient(135deg,#F2682A,#D9531A)" }}
+      >
+        <div className="mx-auto max-w-[1180px] px-6">
+          <h2 className="font-display font-extrabold text-white text-[clamp(1.7rem,3.6vw,2.5rem)] max-w-[20ch] mx-auto">
+            Let&apos;s connect learning to opportunity.
+          </h2>
+
+          <p className="mt-3.5 max-w-[54ch] mx-auto text-[#FFE6D8]">
+            Tell us about your institution and the students you serve. We will
+            recommend the partnership model that fits.
+          </p>
+
+          <button
+            type="button"
+            onClick={onPartnerClick}
+            className="inline-flex items-center gap-2 font-display font-bold text-[.95rem] px-6 py-[.95rem] rounded-full mt-7 bg-white text-cf-orangeDk hover:bg-[#FFF1E8] transition-colors"
+          >
+            Partner with us →
+          </button>
+        </div>
+      </section>
+    </>
   );
 }
 

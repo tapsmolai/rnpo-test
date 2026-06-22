@@ -62,7 +62,7 @@ export default function AudienceHeader({
         <nav className="hidden md:flex items-center gap-7">
           <button
             type="button"
-            onClick={handleAboutClick}
+            onClick={onAboutClick}
             className={
               activePage === "about" ? activeNavClass : inactiveNavClass
             }
@@ -72,7 +72,7 @@ export default function AudienceHeader({
 
           <button
             type="button"
-            onClick={handleLogoClick}
+            onClick={onLogoClick}
             className={
               activePage === "audience" ? activeNavClass : inactiveNavClass
             }
@@ -134,7 +134,7 @@ export default function AudienceHeader({
             type="button"
             onClick={handleAboutClick}
             className={`block w-full py-2.5 text-left font-display font-semibold transition-colors ${
-              activePage === "about"
+              activePage === "audience"
                 ? "text-cf-orange"
                 : "text-cf-navy hover:text-cf-orange"
             }`}
