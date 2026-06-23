@@ -11,6 +11,125 @@ import { useRegisterStore } from "../store/registerStore";
 
 import heroImg from "../assets/hero.jpg";
 
+// import quickTopUpVideo from "../assets/videos/quick-top-up.mp4";
+// import aiTutorVideo from "../assets/videos/ai-tutor.mp4";
+
+type VideoItem = {
+  tag: string;
+  tagStyle?: "primary" | "secondary" | "partner";
+  title: string;
+  sub: string;
+  src?: string;
+};
+
+function EmbeddedVideoCard({ video }: { video: VideoItem }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const isVimeo = video.src?.includes("vimeo.com");
+  const isMp4 = video.src?.includes(".mp4");
+
+  const getVimeoEmbedUrl = (url: string) => {
+    const videoId = url.match(/vimeo\.com\/(\d+)/)?.[1];
+
+    return videoId
+      ? `https://player.vimeo.com/video/${videoId}?autoplay=1`
+      : url;
+  };
+
+  const canPlay = Boolean(video.src && (isVimeo || isMp4));
+
+  return (
+    <article
+      className="reveal relative overflow-hidden rounded-[18px] bg-cf-navyInk shadow-[0_18px_40px_-28px_rgba(27,34,44,.38)] transition hover:-translate-y-1 hover:shadow-cf"
+      style={{ aspectRatio: "16/9" }}
+    >
+      {isPlaying && video.src ? (
+        isVimeo ? (
+          <iframe
+            src={getVimeoEmbedUrl(video.src)}
+            title={video.title}
+            className="absolute inset-0 h-full w-full"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <video
+            src={video.src}
+            className="absolute inset-0 h-full w-full bg-[#111820] object-contain"
+            controls
+            autoPlay
+            playsInline
+          />
+        )
+      ) : (
+        <>
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                video.tagStyle === "primary"
+                  ? "linear-gradient(135deg,#2D3645 0%,#1B222C 100%)"
+                  : "linear-gradient(135deg,#3A4250 0%,#22303C 100%)",
+            }}
+          />
+
+          <div
+            className="absolute inset-0 opacity-60"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+
+          <div className="absolute inset-0 flex flex-col justify-between p-[22px] text-white">
+            <span
+              className={`self-start rounded-full border px-2.5 py-1 font-display text-[.66rem] font-bold uppercase tracking-[.12em] ${
+                video.tagStyle === "primary"
+                  ? "border-cf-orange/35 bg-cf-orange/20 text-[#FFB892]"
+                  : "border-white/20 bg-white/10 text-white"
+              }`}
+            >
+              {video.tag}
+            </span>
+
+            <div>
+              <div className="font-display text-[1.05rem] font-bold leading-tight text-white">
+                {video.title}
+              </div>
+
+              <small className="mt-1 block text-[.82rem] font-medium text-[#9AA5B5]">
+                {video.sub}
+              </small>
+            </div>
+          </div>
+
+          {canPlay ? (
+            <button
+              type="button"
+              aria-label={`Play ${video.title}`}
+              onClick={() => setIsPlaying(true)}
+              className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-cf-orange/90 shadow-[0_12px_30px_-8px_rgba(242,104,42,.5)] transition hover:scale-110 hover:bg-cf-orange"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="ml-1 h-6 w-6 text-white"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </button>
+          ) : (
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-white/10 px-4 py-2 font-display text-[.72rem] font-bold uppercase tracking-[.1em] text-white/75">
+              Coming soon
+            </span>
+          )}
+        </>
+      )}
+    </article>
+  );
+}
+
 /* Scroll-reveal — re-runs when step changes so new sections animate in */
 function useReveal(step: string) {
   useEffect(() => {
@@ -326,7 +445,7 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
           heading={c.videos.heading}
           intro={c.videos.intro}
         />
-        <div className="grid md:grid-cols-2 gap-[22px]">
+        {/* <div className="grid md:grid-cols-2 gap-[22px]">
           {c.videos.items.map((v, i) => (
             <div
               key={i}
@@ -378,6 +497,11 @@ export default function LandingPage({ config: c }: { config: AudienceConfig }) {
                 </svg>
               </div>
             </div>
+          ))}
+        </div> */}
+        <div className="grid gap-[22px] md:grid-cols-2">
+          {c.videos.items.map((video) => (
+            <EmbeddedVideoCard key={video.title} video={video} />
           ))}
         </div>
         {c.videos.placeholderNote && (
@@ -1686,4 +1810,68 @@ function SecHead({
       )}
     </div>
   );
+}
+
+{
+  /* <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div>
+            <p className="font-display text-[.75rem] font-bold uppercase tracking-[.16em] text-cf-orange">
+              See it in action
+            </p>
+
+            <h2 className="mt-3 font-display text-4xl font-extrabold text-cf-navy">
+              Real tools. Real learner impact.
+            </h2>
+
+            <p className="mt-4 max-w-[52ch] text-cf-muted">
+              From quick data top-ups to curriculum-aligned learning support,
+              Connect+Funda gives learners practical tools they can use every
+              day.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <article className="overflow-hidden rounded-[24px] border border-cf-line bg-white shadow-[0_18px_45px_-30px_rgba(27,34,44,.35)]">
+              <video
+                controls
+                playsInline
+                preload="metadata"
+                className="aspect-[9/16] w-full object-cover bg-cf-navyInk"
+              >
+                <source src={quickTopUpVideo} type="video/mp4" />
+              </video>
+
+              <div className="p-5">
+                <h3 className="font-display text-lg font-bold text-cf-navy">
+                  Quick top-ups
+                </h3>
+                <p className="mt-1 text-sm text-cf-muted">
+                  Simple, secure data purchases inside the Connect+Funda
+                  experience.
+                </p>
+              </div>
+            </article>
+
+            <article className="overflow-hidden rounded-[24px] border border-cf-line bg-white shadow-[0_18px_45px_-30px_rgba(27,34,44,.35)]">
+              <video
+                controls
+                playsInline
+                preload="metadata"
+                className="aspect-[9/16] w-full object-cover bg-cf-navyInk"
+              >
+                <source src={aiTutorVideo} type="video/mp4" />
+              </video>
+
+              <div className="p-5">
+                <h3 className="font-display text-lg font-bold text-cf-navy">
+                  AI-powered learning
+                </h3>
+                <p className="mt-1 text-sm text-cf-muted">
+                  Curriculum-aligned study support designed around learner
+                  progress.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div> */
 }
